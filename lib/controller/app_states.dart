@@ -14,6 +14,8 @@ class GettingInvoicesSuccessState extends AppStates {}
 
 class GettingInvoicesErrorState extends AppStates {}
 
+class GettingInvoicesRefreshState extends AppStates {}
+
 class GettingUnitsLoadingState extends AppStates {}
 
 class GettingUnitsSuccessState extends AppStates {}

@@ -16,11 +16,11 @@ class AppCubit extends Cubit<AppStates> {
   Future connectToDataBase() async {
     emit(ConnectingToDatabaseLoadingState());
     await SqlConn.connect(
-      ip: "192.168.1.18",
+      ip: "192.168.1.1",
       port: "1433",
       databaseName: "Interview",
-      username: "so",
-      password: "Amazing@159",
+      username: "sa",
+      password: "123456",
     ).then((value) {
       emit(ConnectingToDatabaseSuccessState());
     }).catchError((onError) {
@@ -28,8 +28,13 @@ class AppCubit extends Cubit<AppStates> {
     });
   }
 
-  Future getInvoices() async {
-    emit(GettingInvoicesLoadingState());
+  Future getInvoices({bool isRefresh = false}) async {
+    if (isRefresh) {
+      emit(GettingInvoicesRefreshState());
+    } else {
+      emit(GettingInvoicesLoadingState());
+    }
+
     await SqlConn.readData("select * from InvoiceDetails").then((value) {
       var data = jsonDecode(value);
       invoicesList = List<InvoiceModel>.from(
@@ -55,7 +60,7 @@ class AppCubit extends Cubit<AppStates> {
   Future updateInvoice(InvoiceModel invoice) async {
     emit(UpdatingInvoiceLoadingState());
     await SqlConn.writeData(
-      "update InvoiceDetails set productName = '${invoice.productName}', UnitNo = ${invoice.unitNo}, price = ${invoice.price}, quantity = ${invoice.quantity}, total = ${invoice.total}, expiryDate = ${invoice.expiryDate} where [lineNo] = ${invoice.lineNo}",
+      "update InvoiceDetails set productName = '${invoice.productName}', UnitNo = ${invoice.unitNo}, price = ${invoice.price}, quantity = ${invoice.quantity}, total = ${invoice.total}, expiryDate = '${invoice.expiryDate} 00:00:00.000' where [lineNo] = ${invoice.lineNo}",
     ).then((value) {
       emit(UpdatingInvoiceSuccessState());
     }).catchError((onError) {
@@ -66,7 +71,7 @@ class AppCubit extends Cubit<AppStates> {
   Future addInvoice(InvoiceModel invoice) async {
     emit(AddingInvoiceLoadingState());
     await SqlConn.writeData(
-      "insert into InvoiceDetails (productName, UnitNo, price, quantity, total, expiryDate) values ('${invoice.productName}', ${invoice.unitNo}, ${invoice.price}, ${invoice.quantity}, ${invoice.total}, ${invoice.expiryDate})",
+      "insert into InvoiceDetails (productName, UnitNo, price, quantity, total, expiryDate) values ('${invoice.productName}', ${invoice.unitNo}, ${invoice.price}, ${invoice.quantity}, ${invoice.total}, '${invoice.expiryDate} 00:00:00.000')",
     ).then((value) {
       emit(AddingInvoiceSuccessState());
     }).catchError((onError) {
@@ -79,6 +84,7 @@ class AppCubit extends Cubit<AppStates> {
     await SqlConn.writeData(
       "delete from InvoiceDetails where [lineNo] = $invoiceNo",
     ).then((value) {
+      // invoicesList.removeWhere((invoice) => invoice.lineNo == invoiceNo);
       emit(DeletingInvoiceSuccessState());
     }).catchError((onError) {
       emit(DeletingInvoiceErrorState());

@@ -4,14 +4,14 @@ import 'package:flutter/material.dart';
 
 class DefaultTextFormField extends StatelessWidget {
   const DefaultTextFormField({
-    Key? key,
+    super.key,
     required this.controller,
     required this.keyboardType,
     this.enabled = true,
     this.onTap,
     required this.onChanged,
     this.readOnly = false,
-  }) : super(key: key);
+  });
   final TextEditingController controller;
   final TextInputType keyboardType;
   final bool enabled;
@@ -28,6 +28,7 @@ class DefaultTextFormField extends StatelessWidget {
           borderSide: BorderSide(
             color: Colors.grey,
           ),
+          borderRadius: BorderRadius.all(Radius.circular(15)),
         ),
         focusedBorder: OutlineInputBorder(
           borderSide: BorderSide(
@@ -38,6 +39,7 @@ class DefaultTextFormField extends StatelessWidget {
           borderSide: BorderSide(
             color: Color.fromARGB(255, 94, 94, 94),
           ),
+          borderRadius: BorderRadius.all(Radius.circular(15)),
         ),
       ),
       controller: controller,
